@@ -2,46 +2,43 @@
 
 hca2wav wrapper working on Python3.
 
-## 概要
+## Summary
 
-[@Nyagamon](https://github.com/Nyagamon)さんの[HCADecoder](https://github.com/Nyagamon/HCADecoder)をベースにしたhcaデコーダ、[hca2wav](https://github.com/CrescentApricot/hca2wav)のPython3ラッパーです。<br>
+Python3 wrapper for [hca2wav](https://github.com/CrescentApricot/hca2wav) (forked [hca2wav](https://github.com/erikchan002/hca2wav)) which is an hca decoder based on [@Nyagamon](https://github.com/Nyagamon)'s [HCADecoder](https://github.com/Nyagamon/HCADecoder)<br>
 
-## 依存
+## Dependencies
 - Python3
 - C++11
 
-## インストール
+## Installation
 
 ```
-pip3 install git+ssh://git@github.com/CrescentApricot/hcapy.git
+pip3 install git+https://github.com/erikchan002/hcapy.git
 ```
 
-## 使い方
+## Usage
 
 ```python
 import hcapy
+import shutil
 
-d = hcapy.Decoder(961961961961961)  # 鍵指定
+hcaDecoder = hcapy.Decoder(961961961961961)  # key
 
-d.decode_file("target_file.hca")  # target_file.hcaを指定した鍵でデコード
+hcaDecoder.decode_file("target_file.hca", dest="decoded.wav")  # decode target_file.hca with the key above into decoded.wav
 
 try:
   with open("target_file.hca", "rb") as f, open("decoded.wav", "wb") as f2:
-    f2.write(d.decode(f.read()).read())  # bytesからデコード、io.BytesIOでリターンする
+    shutil.copyfileobj(hcaDecoder.decode(f.read()), f2) # decoding bytes into io.BytesIO
 except hcapy.InvalidHCAError:
   print("invalid hca!")
 ```
 
-### 鍵について
+### Key
 
-上記コードでは `961961961961961` のようなintで指定していますが、`"0x36ae63907b9e9"`のような形式でも、`"36ae63907b9e9"`のような形式でも、`"3907b9e9", "36ae"`のような形式でも指定可能です。
+The key can be a decimal integer `961961961961961`, or a hex string e.g. `"0x36ae63907b9e9"`, `"36ae63907b9e9"`,`"3907b9e9"`, `"36ae"`
 
-### 出力ファイルパスについて
+### Output path
 
-`decode_file` の場合、出力ファイルパスを引数 `dest` に指定することができますが、指定しないこともできます。指定しない場合、`src` と同じディレクトリに生成されます。
+If `dest` is not specified the output path will be the same as the input file for `decode_file`
 
-## 実装予定
 
-- ~~`bytes` からのデコード~~ (無理やり実装済み)
-- コマンドラインツール
-- パッケージ構成の正規化（hcapy.Decoder, hcapy.exceptions.Invalid...）
